@@ -72,7 +72,7 @@ bluerov_sitl:
     # STABILIZE is a CLOSED LOOP: it needs the vehicle's attitude. Without
     # fresh data on this topic the node holds every thruster neutral rather
     # than stabilizing against a stale orientation.
-    imu_topic: "/BlueROV2_Heavy/mavros/imu/data_raw"
+    # imu_topic: "/BlueROV2_Heavy/mavros/imu/data_raw"
     attitude_timeout_s: 0.5
 
     # Frame of the incoming IMU attitude/rates.

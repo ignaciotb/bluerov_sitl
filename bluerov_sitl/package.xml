@@ -19,6 +19,7 @@
 
   <depend>rclpy</depend>
   <depend>mavros_msgs</depend>
+  <depend>brov_msgs</depend>
   <depend>std_msgs</depend>
   <depend>ament_index_python</depend>
 

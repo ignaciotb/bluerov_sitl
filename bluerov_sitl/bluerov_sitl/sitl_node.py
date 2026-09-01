@@ -30,8 +30,13 @@ channels and the mixer, and needs attitude feedback to close the loop.
           |
           v
     per-thruster PWM, published as mavros_msgs/RCIn on
-    /BlueROV2_Heavy/mavros/rc/in -- channel i is motor i+1, so it lines
-    up index-for-index with the real vehicle's mavros/rc/out
+    brov_msgs/Topics.RC_IN_TOPIC (/BlueROV2_Heavy/mavros/rc/in) -- channel
+    i is motor i+1, so it lines up index-for-index with the real vehicle's
+    mavros/rc/out
+
+Every topic this node touches is named in brov_msgs/msg/Topics.msg rather
+than spelled out here, so the rest of the stack cannot drift out of sync
+with it.
 
 Explicitly OUT OF SCOPE for this node (real ArduSub does more than this
 in MANUAL mode -- add these yourself if you need them):
@@ -81,6 +86,10 @@ except ImportError:  # pragma: no cover
     _HAVE_MAVROS_STATE = False
 
 from std_msgs.msg import Header
+
+# Topic names live in brov_msgs/msg/Topics.msg so every node in the BlueROV2
+# stack agrees on them without each declaring its own parameter.
+from brov_msgs.msg import Topics as BrovTopics
 
 from bluerov_sitl.rc_channel import RCChannel, ChannelMode
 from bluerov_sitl.motor_mixer_6dof import SixDofMixer, MixerConfig
@@ -151,12 +160,12 @@ class BlueRovSitlNode(Node):
             )
 
         self.override_sub = self.create_subscription(
-            OverrideRCIn, "mavros/rc/override", self._on_override, 10
+            OverrideRCIn, BrovTopics.RC_OVERRIDE_TOPIC, self._on_override, 10
         )
 
         if _HAVE_MAVROS_STATE:
             self.state_sub = self.create_subscription(
-                MavrosState, "mavros/state", self._on_state, 10
+                MavrosState, BrovTopics.MAVROS_STATE_TOPIC, self._on_state, 10
             )
         else:
             self.get_logger().warn(
@@ -164,7 +173,7 @@ class BlueRovSitlNode(Node):
                 "solely on assume_armed_for_testing."
             )
 
-        self.pwm_pub = self.create_publisher(RCIn, "/BlueROV2_Heavy/mavros/rc/in", 10)
+        self.pwm_pub = self.create_publisher(RCIn, BrovTopics.RC_IN_TOPIC, 10)
 
         # --- flight modes -------------------------------------------------
         mode_params = {
@@ -197,9 +206,9 @@ class BlueRovSitlNode(Node):
 
         self.get_logger().info(
             f"bluerov_sitl up. Motors: {self.mixer.motor_numbers()}. "
-            f"Mode: {self._mode_name}. Listening on mavros/rc/override "
-            f"(+ {imu_topic} for stabilize), publishing "
-            f"/BlueROV2_Heavy/mavros/rc/in at {rate_hz} Hz."
+            f"Mode: {self._mode_name}. Listening on "
+            f"{BrovTopics.RC_OVERRIDE_TOPIC} (+ {imu_topic} for stabilize), "
+            f"publishing {BrovTopics.RC_IN_TOPIC} at {rate_hz} Hz."
         )
 
     # ------------------------------------------------------------------
@@ -253,7 +262,10 @@ class BlueRovSitlNode(Node):
 
         # STABILIZE only -- it is a closed loop and needs the vehicle's
         # attitude. MANUAL ignores all of these.
-        self.declare_parameter("imu_topic", "mavros/imu/data")
+        # Kept as a parameter because it is one of the few topics that really
+        # does get repointed at launch (real vehicle vs. sim); the default
+        # comes from Topics.msg.
+        self.declare_parameter("imu_topic", BrovTopics.IMU_TOPIC)
         self.declare_parameter("attitude_timeout_s", 0.5)
 
         # Frame of the incoming IMU attitude and rates:
