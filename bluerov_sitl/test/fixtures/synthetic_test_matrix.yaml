@@ -1,0 +1,57 @@
+# SYNTHETIC TEST FIXTURE -- these are NOT the real BlueROV2 Heavy thruster
+# factors. Each motor here responds to exactly one DOF with a factor of
+# 1.0 so that expected mixer output is trivial to compute by hand and
+# assert on in test_motor_mixer.py.
+#
+# The real matrix must come from scripts/extract_motor_matrix.py run
+# against a vendored ArduSub checkout -- see README.md.
+_source:
+  note: "SYNTHETIC TEST FIXTURE, not extracted from ArduSub. Do not use for anything but unit tests."
+frame_class: TEST_SYNTHETIC
+num_motors: 6
+motors:
+  - motor: 1
+    roll_factor: 1.0
+    pitch_factor: 0.0
+    yaw_factor: 0.0
+    throttle_factor: 0.0
+    forward_factor: 0.0
+    lateral_factor: 0.0
+  - motor: 2
+    roll_factor: 0.0
+    pitch_factor: 1.0
+    yaw_factor: 0.0
+    throttle_factor: 0.0
+    forward_factor: 0.0
+    lateral_factor: 0.0
+  - motor: 3
+    roll_factor: 0.0
+    pitch_factor: 0.0
+    yaw_factor: 1.0
+    throttle_factor: 0.0
+    forward_factor: 0.0
+    lateral_factor: 0.0
+  - motor: 4
+    roll_factor: 0.0
+    pitch_factor: 0.0
+    yaw_factor: 0.0
+    throttle_factor: 1.0
+    forward_factor: 0.0
+    lateral_factor: 0.0
+  - motor: 5
+    roll_factor: 0.0
+    pitch_factor: 0.0
+    yaw_factor: 0.0
+    throttle_factor: 0.0
+    forward_factor: 1.0
+    lateral_factor: 0.0
+  - motor: 6
+    roll_factor: 0.0
+    pitch_factor: 0.0
+    yaw_factor: 0.0
+    throttle_factor: 0.0
+    forward_factor: 0.0
+    lateral_factor: 1.0
+rc_input:
+  roll_pitch_input_max: 4500
+  deadzone_us: {roll: 30, pitch: 30, throttle: 30, yaw: 40, forward: 30, lateral: 30}
